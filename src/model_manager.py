@@ -3,13 +3,16 @@ from ctransformers import AutoModelForCausalLM
 from sentence_transformers import SentenceTransformer
 import torch
 import os
+from dotenv import load_dotenv
 
 class ModelManager:
     def __init__(self, models_dir: str = "../models"):
+        load_dotenv()
         self.models_dir = Path(models_dir)
         self.models_dir.mkdir(exist_ok=True)
         self.llm = None
         self.embedding_model = None
+        self.hf_token = os.getenv("HUGGINGFACE_TOKEN")
         
     def load_llm(self, model_type: str = "gpt4all-j"):
         """Load the language model optimized for CPU inference"""
@@ -32,7 +35,8 @@ class ModelManager:
         """Load the sentence transformer model for embeddings"""
         self.embedding_model = SentenceTransformer(
             'all-MiniLM-L6-v2',
-            device='cpu'
+            device='cpu',
+            token=self.hf_token
         )
         return self.embedding_model
     
